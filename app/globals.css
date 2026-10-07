@@ -1,26 +1,54 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-secondary: var(--secondary);
+  --color-tertiary: var(--tertiary);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+  --font-sans: var(--font-dm-sans);
+  --radius-sm: 2px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  --background: #ffffff;
+  --surface: #eeeeee;
+  --foreground: #000000;
+  --primary: #0b5c36;
+  --primary-foreground: #ffffff;
+  --accent: #c5ffd6;
+  --accent-foreground: #000000;
+  --secondary: #ffcffe;
+  --tertiary: #28e99f;
+  --muted: #eeeeee;
+  --muted-foreground: #171717;
+  --border: #d6d6d6;
+  --ring: #0b5c36;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+a,
+button,
+[role='button'] {
+  cursor: pointer;
+}
+
+a:disabled,
+button:disabled {
+  cursor: not-allowed;
 }
