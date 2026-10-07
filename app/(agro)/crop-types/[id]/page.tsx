@@ -4,7 +4,8 @@ import {
   IoArrowBackOutline,
   IoFlowerOutline,
 } from 'react-icons/io5';
-import { apiServer, requireUser } from '@/lib/auth-server';
+import { apiCatalog, requireUser } from '@/lib/auth-server';
+import { CACHE_TAGS } from '@/lib/constants';
 import type { CropTypeDetail } from '@/lib/types';
 import { Card } from '@/components/card/card';
 import { CropTypeEditForm } from '@/components/crop-type-edit-form/crop-type-edit-form';
@@ -17,7 +18,7 @@ export default async function CropTypeDetailPage({
 }) {
   const viewer = await requireUser('/crop-types');
   const { id } = await params;
-  const cropType = await apiServer<CropTypeDetail>(`/crop-types/${encodeURIComponent(id)}`, { cache: 'force-cache' });
+  const cropType = await apiCatalog<CropTypeDetail>(CACHE_TAGS.cropTypes, `/crop-types/${encodeURIComponent(id)}`);
   const isAdmin = viewer.role === 'ADMINISTRATION';
 
   if (!cropType) {

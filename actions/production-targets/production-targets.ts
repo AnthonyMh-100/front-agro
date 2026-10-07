@@ -1,8 +1,8 @@
 'use server';
 
 import { cookies } from 'next/headers';
-import { revalidatePath } from 'next/cache';
-import { API_URL, MESSAGES, ROUTES } from '@/lib/constants';
+import { revalidatePath, updateTag } from 'next/cache';
+import { API_URL, CACHE_TAGS, MESSAGES, ROUTES } from '@/lib/constants';
 import { parseApiError } from '@/lib/utils';
 
 export interface ActionState {
@@ -50,6 +50,8 @@ export async function createTargetAction(
   }
   revalidatePath(`${ROUTES.campaigns}/${campaignId}`);
   revalidatePath(ROUTES.reports);
+  updateTag(CACHE_TAGS.targets);
+  updateTag(CACHE_TAGS.reports);
   return { ok: true, message: null };
 }
 
@@ -76,6 +78,8 @@ export async function updateTargetAction(
   revalidatePath(ROUTES.campaigns);
   if (Number.isFinite(campaignId) && campaignId >= 1) revalidatePath(`${ROUTES.campaigns}/${campaignId}`);
   revalidatePath(ROUTES.reports);
+  updateTag(CACHE_TAGS.targets);
+  updateTag(CACHE_TAGS.reports);
   return { ok: true, message: null };
 }
 
@@ -95,5 +99,7 @@ export async function deleteTargetAction(
   revalidatePath(ROUTES.campaigns);
   if (Number.isFinite(campaignId) && campaignId >= 1) revalidatePath(`${ROUTES.campaigns}/${campaignId}`);
   revalidatePath(ROUTES.reports);
+  updateTag(CACHE_TAGS.targets);
+  updateTag(CACHE_TAGS.reports);
   return { ok: true, message: null };
 }

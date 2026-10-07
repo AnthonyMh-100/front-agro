@@ -7,8 +7,8 @@ import {
   IoFlowerOutline,
   IoSearchOutline,
 } from 'react-icons/io5';
-import { apiServer, requireUser } from '@/lib/auth-server';
-import { DEFAULT_PAGE_SIZE } from '@/lib/constants';
+import { apiCatalog, requireUser } from '@/lib/auth-server';
+import { CACHE_TAGS, DEFAULT_PAGE_SIZE } from '@/lib/constants';
 import type { CropTypesResponse } from '@/lib/types';
 import { Button } from '@/components/button/button';
 import { Card } from '@/components/card/card';
@@ -27,7 +27,7 @@ export default async function CropTypesPage({
 
   const params = new URLSearchParams({ page: String(page), limit: String(DEFAULT_PAGE_SIZE) });
   if (search) params.set('search', search);
-  const data = await apiServer<CropTypesResponse>(`/crop-types?${params.toString()}`, { cache: 'force-cache' });
+  const data = await apiCatalog<CropTypesResponse>(CACHE_TAGS.cropTypes, `/crop-types?${params.toString()}`);
 
   return (
     <div>

@@ -7,8 +7,8 @@ import {
   IoChevronForwardOutline,
   IoSearchOutline,
 } from 'react-icons/io5';
-import { apiServer, requireUser } from '@/lib/auth-server';
-import { DEFAULT_PAGE_SIZE } from '@/lib/constants';
+import { apiCatalog, requireUser } from '@/lib/auth-server';
+import { CACHE_TAGS, DEFAULT_PAGE_SIZE } from '@/lib/constants';
 import type { CampaignsResponse } from '@/lib/types';
 import { Button } from '@/components/button/button';
 import { Card } from '@/components/card/card';
@@ -27,7 +27,7 @@ export default async function CampaignsPage({
 
   const params = new URLSearchParams({ page: String(page), limit: String(DEFAULT_PAGE_SIZE) });
   if (search) params.set('search', search);
-  const data = await apiServer<CampaignsResponse>(`/campaigns?${params.toString()}`, { cache: 'force-cache' });
+  const data = await apiCatalog<CampaignsResponse>(CACHE_TAGS.campaigns, `/campaigns?${params.toString()}`);
 
   return (
     <div>

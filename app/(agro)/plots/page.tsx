@@ -7,8 +7,8 @@ import {
   IoMapOutline,
   IoSearchOutline,
 } from 'react-icons/io5';
-import { apiServer, requireUser } from '@/lib/auth-server';
-import { DEFAULT_PAGE_SIZE } from '@/lib/constants';
+import { apiCatalog, requireUser } from '@/lib/auth-server';
+import { CACHE_TAGS, DEFAULT_PAGE_SIZE } from '@/lib/constants';
 import type { CropTypesResponse, FarmsResponse, PlotsResponse } from '@/lib/types';
 import { Button } from '@/components/button/button';
 import { Card } from '@/components/card/card';
@@ -31,9 +31,9 @@ export default async function PlotsPage({
   if (search) params.set('search', search);
   if (farmId) params.set('farmId', farmId);
   const [data, farms, cropTypes] = await Promise.all([
-    apiServer<PlotsResponse>(`/plots?${params.toString()}`, { cache: 'force-cache' }),
-    apiServer<FarmsResponse>('/farms?page=1&limit=50', { cache: 'force-cache' }),
-    apiServer<CropTypesResponse>('/crop-types?page=1&limit=50', { cache: 'force-cache' }),
+    apiCatalog<PlotsResponse>(CACHE_TAGS.plots, `/plots?${params.toString()}`),
+    apiCatalog<FarmsResponse>(CACHE_TAGS.farms, '/farms?page=1&limit=50'),
+    apiCatalog<CropTypesResponse>(CACHE_TAGS.cropTypes, '/crop-types?page=1&limit=50'),
   ]);
   const farmNameById = new Map((farms?.farms ?? []).map((farm) => [farm.id, farm.name]));
   const cropNameById = new Map((cropTypes?.cropTypes ?? []).map((cropType) => [cropType.id, cropType.name]));

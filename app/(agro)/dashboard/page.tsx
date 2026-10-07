@@ -10,7 +10,8 @@ import {
   IoMapOutline,
   IoScaleOutline,
 } from 'react-icons/io5';
-import { apiServer, requireUser } from '@/lib/auth-server';
+import { apiCatalog, apiServer, requireUser } from '@/lib/auth-server';
+import { CACHE_TAGS } from '@/lib/constants';
 import type {
   AssignmentsResponse,
   CampaignsResponse,
@@ -45,7 +46,7 @@ export default async function DashboardPage() {
     isSupervisor
       ? apiServer<AssignmentsResponse>(`/assignments?userId=${user.id}`)
       : Promise.resolve(null),
-    apiServer<CampaignsResponse>('/campaigns?page=1&limit=50', { cache: 'force-cache' }),
+    apiCatalog<CampaignsResponse>(CACHE_TAGS.campaigns, '/campaigns?page=1&limit=50'),
   ]);
   const myPlotIds = (assignments?.assignments ?? [])
     .filter((assignment) => assignment.unassignedAt === null)
@@ -82,7 +83,7 @@ export default async function DashboardPage() {
       productionDayCount: mine.length,
     };
     if (focusCampaign) {
-      const allPlots = await apiServer<PlotsResponse>('/plots?page=1&limit=50', { cache: 'force-cache' });
+      const allPlots = await apiCatalog<PlotsResponse>(CACHE_TAGS.plots, '/plots?page=1&limit=50');
       const plotById = new Map((allPlots?.plots ?? []).map((plot) => [plot.id, plot]));
       const inCampaign = await apiServer<{ productionDays?: { id: number; plotId: number }[] }>(
         `/production-days?campaignId=${focusCampaign.id}&page=1&limit=50`,
@@ -106,9 +107,9 @@ export default async function DashboardPage() {
       dayTotals.forEach((entry) => {
         totalByPlotId.set(entry.plotId, (totalByPlotId.get(entry.plotId) ?? 0) + entry.total);
       });
-      const targets = await apiServer<{ productionTargets?: TargetRow[] }>(
+      const targets = await apiCatalog<{ productionTargets?: TargetRow[] }>(
+        CACHE_TAGS.targets,
         `/production-targets?campaignId=${focusCampaign.id}&page=1&limit=50`,
-        { cache: 'force-cache' },
       );
       const targetByPlotId = new Map(
         (targets?.productionTargets ?? [])
@@ -134,12 +135,12 @@ export default async function DashboardPage() {
         .slice(0, 5);
     }
   } else {
-    summary = await apiServer<ProductionSummary>('/reports/production/summary', { cache: 'force-cache' });
+    summary = await apiCatalog<ProductionSummary>(CACHE_TAGS.reports, '/reports/production/summary');
     if (focusCampaign) {
       byPlot = (
-        (await apiServer<ProductionByPlot[]>(
+        (await apiCatalog<ProductionByPlot[]>(
+          CACHE_TAGS.reports,
           `/reports/production/by-plot?campaignId=${focusCampaign.id}`,
-          { cache: 'force-cache' },
         )) ?? []
       )
         .sort((left, right) => right.totalWeight - left.totalWeight)

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { IoAddOutline, IoArrowBackOutline } from 'react-icons/io5';
-import { apiServer, requireRole } from '@/lib/auth-server';
+import { apiCatalog, requireRole } from '@/lib/auth-server';
+import { CACHE_TAGS } from '@/lib/constants';
 import type { PlotsResponse, UsersResponse } from '@/lib/types';
 import { Card } from '@/components/card/card';
 import { CreateAssignmentForm } from '@/components/create-assignment-form/create-assignment-form';
@@ -8,8 +9,8 @@ import { CreateAssignmentForm } from '@/components/create-assignment-form/create
 export default async function NewAssignmentPage() {
   await requireRole(['ADMINISTRATION'], '/assignments/new');
   const [users, plots] = await Promise.all([
-    apiServer<UsersResponse>('/users?page=1&limit=50', { cache: 'force-cache' }),
-    apiServer<PlotsResponse>('/plots?page=1&limit=50', { cache: 'force-cache' }),
+    apiCatalog<UsersResponse>(CACHE_TAGS.users, '/users?page=1&limit=50'),
+    apiCatalog<PlotsResponse>(CACHE_TAGS.plots, '/plots?page=1&limit=50'),
   ]);
   const supervisors = (users?.users ?? []).filter(
     (candidate) => candidate.role === 'SUPERVISOR' && candidate.isActive,

@@ -2,8 +2,8 @@
 
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { revalidatePath } from 'next/cache';
-import { ACCEPTED_IMAGE_TYPES, API_URL, MAX_IMAGE_FILES, MESSAGES, ROUTES } from '@/lib/constants';
+import { revalidatePath, updateTag } from 'next/cache';
+import { ACCEPTED_IMAGE_TYPES, API_URL, CACHE_TAGS, MAX_IMAGE_FILES, MESSAGES, ROUTES } from '@/lib/constants';
 import { parseApiError } from '@/lib/utils';
 
 export interface ActionState {
@@ -104,6 +104,7 @@ export async function createFarmAction(
       return { ok: false, message: `Fundo creado. No se pudieron subir las imágenes: ${uploadError}` };
   }
   revalidatePath(ROUTES.farms);
+  updateTag(CACHE_TAGS.farms);
   return { ok: true, message: null };
 }
 
@@ -136,6 +137,7 @@ export async function updateFarmAction(
       return { ok: false, message: `Fundo actualizado. No se pudieron subir las imágenes: ${uploadError}` };
   }
   revalidatePath(ROUTES.farms);
+  updateTag(CACHE_TAGS.farms);
   revalidatePath(`/farms/${farmId}`);
   return { ok: true, message: null };
 }
@@ -153,6 +155,7 @@ export async function deactivateFarmAction(
     return { ok: false, message: parseApiError(body, res.statusText) };
   }
   revalidatePath(ROUTES.farms);
+  updateTag(CACHE_TAGS.farms);
   redirect(ROUTES.farms);
 }
 
@@ -169,6 +172,7 @@ export async function activateFarmAction(
     return { ok: false, message: parseApiError(body, res.statusText) };
   }
   revalidatePath(ROUTES.farms);
+  updateTag(CACHE_TAGS.farms);
   revalidatePath(`/farms/${farmId}`);
   return { ok: true, message: null };
 }
@@ -186,6 +190,7 @@ export async function uploadFarmImagesAction(
   const uploadError = await uploadImages(`/farms/${farmId}/images`, files);
   if (uploadError) return { ok: false, message: uploadError };
   revalidatePath(ROUTES.farms);
+  updateTag(CACHE_TAGS.farms);
   revalidatePath(`/farms/${farmId}`);
   return { ok: true, message: null };
 }
@@ -214,6 +219,7 @@ export async function deleteFarmImageAction(
     return { ok: false, message: MESSAGES.noConnection };
   }
   revalidatePath(ROUTES.farms);
+  updateTag(CACHE_TAGS.farms);
   revalidatePath(`/farms/${farmId}`);
   return { ok: true, message: null };
 }

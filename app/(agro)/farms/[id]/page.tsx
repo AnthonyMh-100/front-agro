@@ -6,7 +6,8 @@ import {
   IoGridOutline,
   IoImageOutline,
 } from 'react-icons/io5';
-import { apiServer, requireUser } from '@/lib/auth-server';
+import { apiCatalog, requireUser } from '@/lib/auth-server';
+import { CACHE_TAGS } from '@/lib/constants';
 import type { FarmDetail } from '@/lib/types';
 import { Card } from '@/components/card/card';
 import { FarmEditForm } from '@/components/farm-edit-form/farm-edit-form';
@@ -20,7 +21,7 @@ export default async function FarmDetailPage({
 }) {
   const viewer = await requireUser('/farms');
   const { id } = await params;
-  const farm = await apiServer<FarmDetail>(`/farms/${encodeURIComponent(id)}`, { cache: 'force-cache' });
+  const farm = await apiCatalog<FarmDetail>(CACHE_TAGS.farms, `/farms/${encodeURIComponent(id)}`);
   const isAdmin = viewer.role === 'ADMINISTRATION';
 
   if (!farm) {

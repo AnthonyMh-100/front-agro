@@ -2,8 +2,8 @@
 
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { revalidatePath } from 'next/cache';
-import { API_URL, MESSAGES, ROUTES } from '@/lib/constants';
+import { revalidatePath, updateTag } from 'next/cache';
+import { API_URL, CACHE_TAGS, MESSAGES, ROUTES } from '@/lib/constants';
 import { parseApiError } from '@/lib/utils';
 
 export interface ActionState {
@@ -61,6 +61,7 @@ export async function createCampaignAction(
     return { ok: false, message: parseApiError(body, res.statusText) };
   }
   revalidatePath(ROUTES.campaigns);
+  updateTag(CACHE_TAGS.campaigns);
   return { ok: true, message: null };
 }
 
@@ -85,6 +86,7 @@ export async function updateCampaignAction(
     return { ok: false, message: parseApiError(body, res.statusText) };
   }
   revalidatePath(ROUTES.campaigns);
+  updateTag(CACHE_TAGS.campaigns);
   revalidatePath(`${ROUTES.campaigns}/${campaignId}`);
   return { ok: true, message: null };
 }
@@ -103,6 +105,7 @@ export async function deactivateCampaignAction(
     return { ok: false, message: parseApiError(body, res.statusText) };
   }
   revalidatePath(ROUTES.campaigns);
+  updateTag(CACHE_TAGS.campaigns);
   redirect(ROUTES.campaigns);
 }
 
@@ -120,6 +123,7 @@ export async function activateCampaignAction(
     return { ok: false, message: parseApiError(body, res.statusText) };
   }
   revalidatePath(ROUTES.campaigns);
+  updateTag(CACHE_TAGS.campaigns);
   revalidatePath(`${ROUTES.campaigns}/${campaignId}`);
   return { ok: true, message: null };
 }

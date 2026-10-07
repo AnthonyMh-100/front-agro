@@ -1,8 +1,8 @@
 'use server';
 
 import { cookies } from 'next/headers';
-import { revalidatePath } from 'next/cache';
-import { API_URL, MESSAGES, ROUTES } from '@/lib/constants';
+import { revalidatePath, updateTag } from 'next/cache';
+import { API_URL, CACHE_TAGS, MESSAGES, ROUTES } from '@/lib/constants';
 import { parseApiError } from '@/lib/utils';
 
 export interface ActionState {
@@ -45,5 +45,6 @@ export async function createCorrectionAction(
     revalidatePath(`${ROUTES.production}/${productionDayId}`);
   revalidatePath(ROUTES.production);
   revalidatePath(ROUTES.reports);
+  updateTag(CACHE_TAGS.reports);
   return { ok: true, message: null };
 }

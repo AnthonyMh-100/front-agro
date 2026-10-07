@@ -6,7 +6,8 @@ import {
   IoLeafOutline,
   IoMapOutline,
 } from 'react-icons/io5';
-import { apiServer, requireUser } from '@/lib/auth-server';
+import { apiCatalog, requireUser } from '@/lib/auth-server';
+import { CACHE_TAGS } from '@/lib/constants';
 import type { CropTypesResponse, FarmsResponse, PlotDetail } from '@/lib/types';
 import { Card } from '@/components/card/card';
 import { PlotEditForm } from '@/components/plot-edit-form/plot-edit-form';
@@ -21,9 +22,9 @@ export default async function PlotDetailPage({
   const viewer = await requireUser('/plots');
   const { id } = await params;
   const [plot, farms, cropTypes] = await Promise.all([
-    apiServer<PlotDetail>(`/plots/${encodeURIComponent(id)}`, { cache: 'force-cache' }),
-    apiServer<FarmsResponse>('/farms?page=1&limit=50', { cache: 'force-cache' }),
-    apiServer<CropTypesResponse>('/crop-types?page=1&limit=50', { cache: 'force-cache' }),
+    apiCatalog<PlotDetail>(CACHE_TAGS.plots, `/plots/${encodeURIComponent(id)}`),
+    apiCatalog<FarmsResponse>(CACHE_TAGS.farms, '/farms?page=1&limit=50'),
+    apiCatalog<CropTypesResponse>(CACHE_TAGS.cropTypes, '/crop-types?page=1&limit=50'),
   ]);
   const isAdmin = viewer.role === 'ADMINISTRATION';
 

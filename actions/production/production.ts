@@ -2,8 +2,8 @@
 
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { revalidatePath } from 'next/cache';
-import { API_URL, MESSAGES, ROUTES } from '@/lib/constants';
+import { revalidatePath, updateTag } from 'next/cache';
+import { API_URL, CACHE_TAGS, MESSAGES, ROUTES } from '@/lib/constants';
 import { parseApiError } from '@/lib/utils';
 
 export interface ActionState {
@@ -55,6 +55,7 @@ export async function createProductionDayAction(
       (day) => String(day.date).slice(0, 10) === date.slice(0, 10),
     );
     revalidatePath(ROUTES.production);
+  updateTag(CACHE_TAGS.reports);
     if (days[0]) redirect(`${ROUTES.production}/${days[0].id}`);
     return { ok: false, message: 'El día de producción ya existe' };
   }
@@ -64,6 +65,7 @@ export async function createProductionDayAction(
   }
   const created = (await res.json().catch(() => null)) as { id?: number } | null;
   revalidatePath(ROUTES.production);
+  updateTag(CACHE_TAGS.reports);
   if (created?.id) redirect(`${ROUTES.production}/${created.id}`);
   return { ok: true, message: null };
 }
@@ -90,6 +92,7 @@ export async function updateProductionDayAction(
     return { ok: false, message: parseApiError(body, res.statusText) };
   }
   revalidatePath(ROUTES.production);
+  updateTag(CACHE_TAGS.reports);
   revalidatePath(`${ROUTES.production}/${productionDayId}`);
   return { ok: true, message: null };
 }
@@ -116,5 +119,6 @@ export async function createWeighingAction(
   }
   revalidatePath(`${ROUTES.production}/${productionDayId}`);
   revalidatePath(ROUTES.production);
+  updateTag(CACHE_TAGS.reports);
   return { ok: true, message: null };
 }
