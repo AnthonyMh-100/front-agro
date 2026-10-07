@@ -5,7 +5,8 @@ import {
   IoTrophyOutline,
 } from 'react-icons/io5';
 import { formatWeight } from '@/lib/utils';
-import { apiServer, requireUser } from '@/lib/auth-server';
+import { apiCatalog, apiServer, requireUser } from '@/lib/auth-server';
+import { CACHE_TAGS } from '@/lib/constants';
 import type {
   AssignmentsResponse,
   CampaignsResponse,
@@ -37,8 +38,8 @@ export default async function ReportsPage({
   const isSupervisor = user.role === 'SUPERVISOR';
 
   const [campaigns, farms] = await Promise.all([
-    apiServer<CampaignsResponse>('/campaigns?page=1&limit=50', { cache: 'force-cache' }),
-    apiServer<FarmsResponse>('/farms?page=1&limit=50', { cache: 'force-cache' }),
+    apiCatalog<CampaignsResponse>(CACHE_TAGS.campaigns, '/campaigns?page=1&limit=50'),
+    apiCatalog<FarmsResponse>(CACHE_TAGS.farms, '/farms?page=1&limit=50'),
   ]);
   const campaignName = (campaigns?.campaigns ?? []).find(
     (campaign) => String(campaign.id) === campaignId,
@@ -128,17 +129,17 @@ export default async function ReportsPage({
     if (campaignId) summaryQuery.set('campaignId', campaignId);
     if (farmId) summaryQuery.set('farmId', farmId);
 
-    summary = await apiServer<ProductionSummary>(
+    summary = await apiCatalog<ProductionSummary>(
+      CACHE_TAGS.reports,
       `/reports/production/summary?${summaryQuery.toString()}`,
-      { cache: 'force-cache' },
     );
 
     if (campaignId) {
       const byPlotQuery = new URLSearchParams({ campaignId });
       if (farmId) byPlotQuery.set('farmId', farmId);
-      const rows = await apiServer<ProductionByPlot[]>(
+      const rows = await apiCatalog<ProductionByPlot[]>(
+        CACHE_TAGS.reports,
         `/reports/production/by-plot?${byPlotQuery.toString()}`,
-        { cache: 'force-cache' },
       );
       byPlot = (rows ?? []).sort((left, right) => right.totalWeight - left.totalWeight);
     }

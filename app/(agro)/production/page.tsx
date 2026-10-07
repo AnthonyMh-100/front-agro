@@ -7,8 +7,8 @@ import {
   IoChevronForwardOutline,
   IoScaleOutline,
 } from 'react-icons/io5';
-import { apiServer, requireUser } from '@/lib/auth-server';
-import { DEFAULT_PAGE_SIZE } from '@/lib/constants';
+import { apiCatalog, apiServer, requireUser } from '@/lib/auth-server';
+import { CACHE_TAGS, DEFAULT_PAGE_SIZE } from '@/lib/constants';
 import type {
   AssignmentsResponse,
   FarmsResponse,
@@ -36,8 +36,8 @@ export default async function ProductionPage({
 
   const [assignments, allPlots, farms] = await Promise.all([
     isSupervisor ? apiServer<AssignmentsResponse>(`/assignments?userId=${user.id}`) : Promise.resolve(null),
-    apiServer<PlotsResponse>('/plots?page=1&limit=50', { cache: 'force-cache' }),
-    apiServer<FarmsResponse>('/farms?page=1&limit=50', { cache: 'force-cache' }),
+    apiCatalog<PlotsResponse>(CACHE_TAGS.plots, '/plots?page=1&limit=50'),
+    apiCatalog<FarmsResponse>(CACHE_TAGS.farms, '/farms?page=1&limit=50'),
   ]);
   const myPlotIds = (assignments?.assignments ?? [])
     .filter((assignment) => assignment.unassignedAt === null)

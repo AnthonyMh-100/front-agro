@@ -30,12 +30,13 @@ async function refreshSession(): Promise<boolean> {
   }
 }
 
-async function fetchWithCookie<T>(path: string, init: { cache?: RequestCache } = {}, retried = false): Promise<T | null> {
+async function fetchWithCookie<T>(path: string, init: { cache?: RequestCache; tags?: string[] } = {}, retried = false): Promise<T | null> {
   try {
     const cookie = (await cookies()).toString();
     const res = await fetch(`${getApiUrl()}${path}`, {
       headers: { cookie },
       cache: init.cache ?? 'no-store',
+      next: init.tags ? { tags: init.tags } : undefined,
     });
     if (res.status === 401 && !retried) {
       const renewed = await refreshSession();
@@ -73,6 +74,10 @@ export async function requireRole(allowed: UserRole[], next?: string): Promise<U
   return user;
 }
 
-export async function apiServer<T>(path: string, init: { cache?: RequestCache } = {}): Promise<T | null> {
+export async function apiServer<T>(path: string, init: { cache?: RequestCache; tags?: string[] } = {}): Promise<T | null> {
   return fetchWithCookie<T>(path, init);
+}
+
+export async function apiCatalog<T>(tag: string, path: string): Promise<T | null> {
+  return fetchWithCookie<T>(path, { cache: 'force-cache', tags: [tag] });
 }

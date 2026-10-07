@@ -2,8 +2,8 @@
 
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { revalidatePath } from 'next/cache';
-import { API_URL, MESSAGES, ROUTES } from '@/lib/constants';
+import { revalidatePath, updateTag } from 'next/cache';
+import { API_URL, CACHE_TAGS, MESSAGES, ROUTES } from '@/lib/constants';
 import { parseApiError } from '@/lib/utils';
 
 export interface ActionState {
@@ -57,6 +57,7 @@ export async function createCropTypeAction(
     return { ok: false, message: parseApiError(body, res.statusText) };
   }
   revalidatePath(ROUTES.cropTypes);
+  updateTag(CACHE_TAGS.cropTypes);
   return { ok: true, message: null };
 }
 
@@ -81,6 +82,7 @@ export async function updateCropTypeAction(
     return { ok: false, message: parseApiError(body, res.statusText) };
   }
   revalidatePath(ROUTES.cropTypes);
+  updateTag(CACHE_TAGS.cropTypes);
   revalidatePath(`${ROUTES.cropTypes}/${cropTypeId}`);
   return { ok: true, message: null };
 }
@@ -99,6 +101,7 @@ export async function deactivateCropTypeAction(
     return { ok: false, message: parseApiError(body, res.statusText) };
   }
   revalidatePath(ROUTES.cropTypes);
+  updateTag(CACHE_TAGS.cropTypes);
   redirect(ROUTES.cropTypes);
 }
 
@@ -116,6 +119,7 @@ export async function activateCropTypeAction(
     return { ok: false, message: parseApiError(body, res.statusText) };
   }
   revalidatePath(ROUTES.cropTypes);
+  updateTag(CACHE_TAGS.cropTypes);
   revalidatePath(`${ROUTES.cropTypes}/${cropTypeId}`);
   return { ok: true, message: null };
 }

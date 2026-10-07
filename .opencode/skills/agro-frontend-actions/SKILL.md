@@ -72,6 +72,6 @@ Siempre aplicar en `frontend-agro`. Si una regla choca con otra skill, esta mand
 
 ## 11. Caché de datos por alcance
 
-- `apiServer(path, { cache: 'force-cache' })` SOLO en catálogos idénticos para todo usuario autenticado: fincas, parcelas, cultivos, campañas, usuarios (solo ADMIN), metas, reportes globales y detalles por id. Las mutaciones ya invalidan con `revalidatePath`.
+- `apiCatalog(tag, path)` para catálogos con `force-cache` + tag (`CACHE_TAGS`). Las mutaciones invalidan con `revalidatePath` + `updateTag` (Next 16 exige `updateTag` en Server Actions).
 - `no-store` (defecto) en todo lo filtrado por usuario: asignaciones, días, pesajes, correcciones y resúmenes personales del supervisor. El Data Cache es compartido por URL y filtraría datos entre usuarios.
 - Sesión (`getSessionUser`) con `cache()` de React: memoización por request, nunca entre usuarios.

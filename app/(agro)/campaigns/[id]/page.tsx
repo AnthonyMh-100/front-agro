@@ -6,7 +6,8 @@ import {
   IoCalendarOutline,
   IoTrophyOutline,
 } from 'react-icons/io5';
-import { apiServer, requireUser } from '@/lib/auth-server';
+import { apiCatalog, requireUser } from '@/lib/auth-server';
+import { CACHE_TAGS } from '@/lib/constants';
 import type { Campaign, PlotsResponse, ProductionTargetsResponse } from '@/lib/types';
 import { formatWeight } from '@/lib/utils';
 import { Card } from '@/components/card/card';
@@ -25,9 +26,9 @@ export default async function CampaignDetailPage({
   const viewer = await requireUser('/campaigns');
   const { id } = await params;
   const [campaign, targetsData, plotsData] = await Promise.all([
-    apiServer<Campaign>(`/campaigns/${encodeURIComponent(id)}`, { cache: 'force-cache' }),
-    apiServer<ProductionTargetsResponse>(`/production-targets?campaignId=${encodeURIComponent(id)}&page=1&limit=50`, { cache: 'force-cache' }),
-    apiServer<PlotsResponse>('/plots?page=1&limit=50', { cache: 'force-cache' }),
+    apiCatalog<Campaign>(CACHE_TAGS.campaigns, `/campaigns/${encodeURIComponent(id)}`),
+    apiCatalog<ProductionTargetsResponse>(CACHE_TAGS.targets, `/production-targets?campaignId=${encodeURIComponent(id)}&page=1&limit=50`),
+    apiCatalog<PlotsResponse>(CACHE_TAGS.plots, '/plots?page=1&limit=50'),
   ]);
   const isAdmin = viewer.role === 'ADMINISTRATION';
   const targets = targetsData?.productionTargets ?? [];

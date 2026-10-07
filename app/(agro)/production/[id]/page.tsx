@@ -8,7 +8,8 @@ import {
   IoScaleOutline,
 } from 'react-icons/io5';
 import { redirect } from 'next/navigation';
-import { apiServer, requireUser } from '@/lib/auth-server';
+import { apiCatalog, apiServer, requireUser } from '@/lib/auth-server';
+import { CACHE_TAGS } from '@/lib/constants';
 import type {
   AssignmentsResponse,
   PlotsResponse,
@@ -32,7 +33,7 @@ export default async function ProductionDayDetailPage({
   const { id } = await params;
   const [day, plots, assignments] = await Promise.all([
     apiServer<ProductionDay>(`/production-days/${encodeURIComponent(id)}`),
-    apiServer<PlotsResponse>('/plots?page=1&limit=50', { cache: 'force-cache' }),
+    apiCatalog<PlotsResponse>(CACHE_TAGS.plots, '/plots?page=1&limit=50'),
     user.role === 'SUPERVISOR'
       ? apiServer<AssignmentsResponse>(`/assignments?userId=${user.id}`)
       : Promise.resolve(null),

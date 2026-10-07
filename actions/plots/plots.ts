@@ -2,8 +2,8 @@
 
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { revalidatePath } from 'next/cache';
-import { ACCEPTED_IMAGE_TYPES, API_URL, MAX_IMAGE_FILES, MESSAGES, ROUTES } from '@/lib/constants';
+import { revalidatePath, updateTag } from 'next/cache';
+import { ACCEPTED_IMAGE_TYPES, API_URL, CACHE_TAGS, MAX_IMAGE_FILES, MESSAGES, ROUTES } from '@/lib/constants';
 import { parseApiError } from '@/lib/utils';
 
 export interface ActionState {
@@ -109,6 +109,7 @@ export async function createPlotAction(
       return { ok: false, message: `Parcela creada. No se pudieron subir las imágenes: ${uploadError}` };
   }
   revalidatePath(ROUTES.plots);
+  updateTag(CACHE_TAGS.plots);
   return { ok: true, message: null };
 }
 
@@ -145,6 +146,7 @@ export async function updatePlotAction(
       return { ok: false, message: `Parcela actualizada. No se pudieron subir las imágenes: ${uploadError}` };
   }
   revalidatePath(ROUTES.plots);
+  updateTag(CACHE_TAGS.plots);
   revalidatePath(`${ROUTES.plots}/${plotId}`);
   return { ok: true, message: null };
 }
@@ -162,6 +164,7 @@ export async function deactivatePlotAction(
     return { ok: false, message: parseApiError(body, res.statusText) };
   }
   revalidatePath(ROUTES.plots);
+  updateTag(CACHE_TAGS.plots);
   redirect(ROUTES.plots);
 }
 
@@ -178,6 +181,7 @@ export async function activatePlotAction(
     return { ok: false, message: parseApiError(body, res.statusText) };
   }
   revalidatePath(ROUTES.plots);
+  updateTag(CACHE_TAGS.plots);
   revalidatePath(`${ROUTES.plots}/${plotId}`);
   return { ok: true, message: null };
 }
@@ -195,6 +199,7 @@ export async function uploadPlotImagesAction(
   const uploadError = await uploadImages(`/plots/${plotId}/images`, files);
   if (uploadError) return { ok: false, message: uploadError };
   revalidatePath(ROUTES.plots);
+  updateTag(CACHE_TAGS.plots);
   revalidatePath(`${ROUTES.plots}/${plotId}`);
   return { ok: true, message: null };
 }
@@ -223,6 +228,7 @@ export async function deletePlotImageAction(
     return { ok: false, message: MESSAGES.noConnection };
   }
   revalidatePath(ROUTES.plots);
+  updateTag(CACHE_TAGS.plots);
   revalidatePath(`${ROUTES.plots}/${plotId}`);
   return { ok: true, message: null };
 }

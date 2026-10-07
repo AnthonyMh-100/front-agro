@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { IoAddOutline, IoArrowBackOutline } from 'react-icons/io5';
-import { apiServer, requireRole } from '@/lib/auth-server';
+import { apiCatalog, requireRole } from '@/lib/auth-server';
+import { CACHE_TAGS } from '@/lib/constants';
 import type { CropTypesResponse, FarmsResponse } from '@/lib/types';
 import { Card } from '@/components/card/card';
 import { CreatePlotForm } from '@/components/create-plot-form/create-plot-form';
@@ -8,8 +9,8 @@ import { CreatePlotForm } from '@/components/create-plot-form/create-plot-form';
 export default async function NewPlotPage() {
   await requireRole(['ADMINISTRATION'], '/plots/new');
   const [farms, cropTypes] = await Promise.all([
-    apiServer<FarmsResponse>('/farms?page=1&limit=50', { cache: 'force-cache' }),
-    apiServer<CropTypesResponse>('/crop-types?page=1&limit=50', { cache: 'force-cache' }),
+    apiCatalog<FarmsResponse>(CACHE_TAGS.farms, '/farms?page=1&limit=50'),
+    apiCatalog<CropTypesResponse>(CACHE_TAGS.cropTypes, '/crop-types?page=1&limit=50'),
   ]);
 
   return (

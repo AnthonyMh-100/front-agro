@@ -7,8 +7,8 @@ import {
   IoLeafOutline,
   IoSearchOutline,
 } from 'react-icons/io5';
-import { apiServer, requireUser } from '@/lib/auth-server';
-import { DEFAULT_PAGE_SIZE } from '@/lib/constants';
+import { apiCatalog, requireUser } from '@/lib/auth-server';
+import { CACHE_TAGS, DEFAULT_PAGE_SIZE } from '@/lib/constants';
 import type { FarmsResponse, PlotsResponse } from '@/lib/types';
 import { Button } from '@/components/button/button';
 import { Card } from '@/components/card/card';
@@ -27,13 +27,11 @@ export default async function FarmsPage({
 
   const params = new URLSearchParams({ page: String(page), limit: String(DEFAULT_PAGE_SIZE) });
   if (search) params.set('search', search);
-  const data = await apiServer<FarmsResponse>(`/farms?${params.toString()}`, { cache: 'force-cache' });
+  const data = await apiCatalog<FarmsResponse>(CACHE_TAGS.farms, `/farms?${params.toString()}`);
   const plotCounts = data
     ? await Promise.all(
         data.farms.map(async (farm) => {
-          const plots = await apiServer<PlotsResponse>(`/plots?farmId=${farm.id}&page=1&limit=1`, {
-            cache: 'force-cache',
-          });
+          const plots = await apiCatalog<PlotsResponse>(CACHE_TAGS.plots, `/plots?farmId=${farm.id}&page=1&limit=1`);
           return { farmId: farm.id, count: plots?.totalItems ?? 0 };
         }),
       )

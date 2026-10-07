@@ -6,8 +6,8 @@ import {
   IoChevronForwardOutline,
   IoLinkOutline,
 } from 'react-icons/io5';
-import { apiServer, requireUser } from '@/lib/auth-server';
-import { DEFAULT_PAGE_SIZE } from '@/lib/constants';
+import { apiCatalog, apiServer, requireUser } from '@/lib/auth-server';
+import { CACHE_TAGS, DEFAULT_PAGE_SIZE } from '@/lib/constants';
 import type { AssignmentsResponse, PlotsResponse, UsersResponse } from '@/lib/types';
 import { Button } from '@/components/button/button';
 import { Card } from '@/components/card/card';
@@ -37,8 +37,8 @@ export default async function AssignmentsPage({
   params.set('activeOnly', state === 'all' ? 'false' : 'true');
   const [data, users, plots, ownPool] = await Promise.all([
     apiServer<AssignmentsResponse>(`/assignments?${params.toString()}`),
-    isAdmin ? apiServer<UsersResponse>('/users?page=1&limit=50', { cache: 'force-cache' }) : Promise.resolve(null),
-    apiServer<PlotsResponse>('/plots?page=1&limit=50', { cache: 'force-cache' }),
+    isAdmin ? apiCatalog<UsersResponse>(CACHE_TAGS.users, '/users?page=1&limit=50') : Promise.resolve(null),
+    apiCatalog<PlotsResponse>(CACHE_TAGS.plots, '/plots?page=1&limit=50'),
     isAdmin ? Promise.resolve(null) : apiServer<AssignmentsResponse>(`/assignments?userId=${user.id}&page=1&limit=50`),
   ]);
   const supervisors = (users?.users ?? []).filter(

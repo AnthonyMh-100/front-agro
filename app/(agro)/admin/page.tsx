@@ -7,8 +7,8 @@ import {
   IoPeopleOutline,
   IoSearchOutline,
 } from 'react-icons/io5';
-import { apiServer, requireRole } from '@/lib/auth-server';
-import { DEFAULT_PAGE_SIZE } from '@/lib/constants';
+import { apiCatalog, requireRole } from '@/lib/auth-server';
+import { CACHE_TAGS, DEFAULT_PAGE_SIZE } from '@/lib/constants';
 import type { UsersResponse } from '@/lib/types';
 import { Button } from '@/components/button/button';
 import { Card } from '@/components/card/card';
@@ -28,7 +28,7 @@ export default async function AdminPage({
 
   const params = new URLSearchParams({ page: String(page), limit: String(DEFAULT_PAGE_SIZE) });
   if (search) params.set('search', search);
-  const data = await apiServer<UsersResponse>(`/users?${params.toString()}`, { cache: 'force-cache' });
+  const data = await apiCatalog<UsersResponse>(CACHE_TAGS.users, `/users?${params.toString()}`);
 
   return (
     <div>

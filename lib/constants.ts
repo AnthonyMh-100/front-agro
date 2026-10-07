@@ -3,6 +3,16 @@ export const API_URL =
 
 export const DEFAULT_PAGE_SIZE = 12;
 
+export const CACHE_TAGS = {
+  farms: 'farms',
+  plots: 'plots',
+  cropTypes: 'crop-types',
+  campaigns: 'campaigns',
+  users: 'users',
+  targets: 'targets',
+  reports: 'reports',
+} as const;
+
 export const ACCEPTED_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/webp'] as const;
 
 export const ACCEPTED_IMAGE_EXTENSIONS = '.png,.jpg,.jpeg,.webp';

@@ -1,8 +1,8 @@
 'use server';
 
 import { cookies } from 'next/headers';
-import { revalidatePath } from 'next/cache';
-import { API_URL, MESSAGES, ROUTES } from '@/lib/constants';
+import { revalidatePath, updateTag } from 'next/cache';
+import { API_URL, CACHE_TAGS, MESSAGES, ROUTES } from '@/lib/constants';
 import { parseApiError } from '@/lib/utils';
 
 export interface ActionState {
@@ -55,6 +55,7 @@ export async function createUserAction(
     return { ok: false, message: parseApiError(body, res.statusText) };
   }
   revalidatePath(ROUTES.admin);
+  updateTag(CACHE_TAGS.users);
   return { ok: true, message: null };
 }
 
@@ -71,6 +72,7 @@ export async function activateUserAction(
     return { ok: false, message: parseApiError(body, res.statusText) };
   }
   revalidatePath(ROUTES.admin);
+  updateTag(CACHE_TAGS.users);
   return { ok: true, message: null };
 }
 
@@ -87,6 +89,7 @@ export async function deactivateUserAction(
     return { ok: false, message: parseApiError(body, res.statusText) };
   }
   revalidatePath(ROUTES.admin);
+  updateTag(CACHE_TAGS.users);
   return { ok: true, message: null };
 }
 
@@ -109,5 +112,6 @@ export async function changeUserRoleAction(
     return { ok: false, message: parseApiError(body, res.statusText) };
   }
   revalidatePath(ROUTES.admin);
+  updateTag(CACHE_TAGS.users);
   return { ok: true, message: null };
 }

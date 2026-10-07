@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { IoAddOutline, IoArrowBackOutline } from 'react-icons/io5';
-import { apiServer, requireUser } from '@/lib/auth-server';
+import { apiCatalog, apiServer, requireUser } from '@/lib/auth-server';
+import { CACHE_TAGS } from '@/lib/constants';
 import type { AssignmentsResponse, CampaignsResponse, PlotsResponse } from '@/lib/types';
 import { Card } from '@/components/card/card';
 import { CreateProductionDayForm } from '@/components/create-production-day-form/create-production-day-form';
@@ -20,8 +21,8 @@ export default async function NewProductionDayPage({
   const isSupervisor = user.role === 'SUPERVISOR';
   const [assignments, allPlots, campaigns] = await Promise.all([
     isSupervisor ? apiServer<AssignmentsResponse>(`/assignments?userId=${user.id}`) : Promise.resolve(null),
-    apiServer<PlotsResponse>('/plots?page=1&limit=50', { cache: 'force-cache' }),
-    apiServer<CampaignsResponse>('/campaigns?page=1&limit=50', { cache: 'force-cache' }),
+    apiCatalog<PlotsResponse>(CACHE_TAGS.plots, '/plots?page=1&limit=50'),
+    apiCatalog<CampaignsResponse>(CACHE_TAGS.campaigns, '/campaigns?page=1&limit=50'),
   ]);
   const myPlotIds = (assignments?.assignments ?? [])
     .filter((assignment) => assignment.unassignedAt === null)
